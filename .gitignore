@@ -7,12 +7,11 @@
 
 # IDEA
 .idea
-.run/
 # Editor backup files
 *~
 
 # Rust artifacts
-/*.wasm
+dist/
 target/
 
 # Solidity artifacts

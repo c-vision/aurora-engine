@@ -15,17 +15,27 @@ jobs:
     steps:
       - name: Clone the repository
         uses: actions/checkout@v2
+      - name: Install cargo-make
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: --debug cargo-make
       - name: Run cargo fmt
-        run: cargo fmt --all -- --check
+        run: cargo make fmt-check
   clippy:
     name: Clippy
     runs-on: [self-hosted, heavy]
     steps:
       - name: Clone the repository
         uses: actions/checkout@v2
-      - run: make etc/eth-contracts/res/EvmErc20.bin
+      - name: Install cargo-make
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: --debug cargo-make
+      - run: cargo make build-contracts
       - name: Run Contract cargo clippy
-        run: cargo clippy --no-default-features --features=contract -- -D warnings
+        run: cargo make clippy
       - name: Run cargo clippy
         run: cargo clippy
 
@@ -35,6 +45,10 @@ jobs:
     steps:
       - name: Clone the repository
         uses: actions/checkout@v2
+      - name: Install cargo-make
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: --debug cargo-make
       - name: Run yarn lint
-        working-directory: etc/eth-contracts
-        run: yarn && yarn lint
+        run: cargo make yarn-check

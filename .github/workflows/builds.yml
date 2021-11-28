@@ -11,18 +11,23 @@ jobs:
     steps:
       - name: Clone the repository
         uses: actions/checkout@v2
-      - run: make release
-      - run: ls -lH mainnet-release.wasm
+      - name: Install cargo-make
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: --debug cargo-make
+      - run: cargo make release
+      - run: ls -lH bin/mainnet-release.wasm
       - name: Upload the mainnet-release.wasm artifact
         uses: actions/upload-artifact@v2
         with:
           name: mainnet-release.wasm
-          path: mainnet-release.wasm
+          path: bin/mainnet-release.wasm
       - name: Update the latest release
         uses: svenstaro/upload-release-action@v2
         with:
           tag: latest
-          file: mainnet-release.wasm
+          file: bin/mainnet-release.wasm
           overwrite: true
           repo_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Update the latest tag

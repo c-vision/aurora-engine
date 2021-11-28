@@ -1,0 +1,198 @@
+env_files = [
+    { path = ".env/mainnet.env", profile = "mainnet" },
+    { path = ".env/testnet.env", profile = "testnet" },
+    { path = ".env/betanet.env", profile = "betanet" },
+    { path = ".env/local.env", profile = "local" },
+    { path = ".env/local.env", profile = "development" },
+]
+
+[config]
+default_to_workspace = false
+skip_core_tasks = true
+
+[env]
+NEAR = "near"
+CARGO = "cargo"
+ENGINE_CARGO_TARGET = "wasm32-unknown-unknown"
+SWEEP_DAYS = 14 # 14 days, 2 weeks
+RELEASE = { source = "${IS_RELEASE}", default = false, mapping = { "true" = "--release", "false" = "" } }
+
+[tasks.sweep]
+category = "Cleanup"
+install_crate = "cargo-sweep"
+command = "${CARGO}"
+args = [
+    "sweep",
+    "--time",
+    "${SWEEP_DAYS}",
+]
+
+[tasks.cargo-clean]
+category = "Cleanup"
+command = "${CARGO}"
+args = ["clean"]
+
+[tasks.file-clean]
+category = "Cleanup"
+script = '''
+rm -Rf bin
+rm -Rf etc/eth-contracts/res
+'''
+
+[tasks.clean-flow]
+category = "Cleanup"
+dependencies = [
+    "cargo-clean",
+    "file-clean",
+]
+
+[tasks.clean]
+run_task = "clean-flow"
+
+[tasks.fmt]
+category = "Formatting"
+command = "${CARGO}"
+args = [
+    "fmt",
+    "--all",
+]
+
+[tasks.clippy]
+category = "Check"
+command = "${CARGO}"
+args = [
+    "clippy",
+    "--no-default-features",
+    "--features",
+    "contract",
+    "--",
+    "-D",
+    "warnings",
+]
+
+[tasks.fmt-check]
+category = "Check"
+command = "${CARGO}"
+args = [
+    "fmt",
+    "--",
+    "--check",
+]
+
+[tasks.yarn-check]
+category = "Check"
+script = '''
+cd etc/eth-contracts
+yarn
+yarn lint
+'''
+
+[tasks.check]
+category = "Check"
+dependencies = [
+    "fmt-check",
+    "clippy",
+]
+
+[tasks.post-engine-build-env]
+category = "Tools"
+script = '''
+echo "Environment:"
+echo "    IS_RELEASE:           ${IS_RELEASE}"
+echo "    CARGO_FEATURES:       ${ACTUAL_FEATURES}"
+echo "    TARGET_WASM:          ${ACTUAL_WASM}"
+'''
+
+[tasks.copy-engine-build]
+category = "Post"
+command = "cp"
+args = [
+    "target/wasm32-unknown-unknown/release/aurora_engine.wasm",
+    "bin/${ACTUAL_WASM}",
+]
+
+[tasks.make-bin-directory]
+category = "Post"
+command = "mkdir"
+args = [
+    "-p",
+    "bin",
+]
+
+[tasks.build-contracts]
+category = "Build"
+script = '''
+cd etc/eth-contracts
+yarn
+yarn build
+'''
+
+[tasks.build-engine]
+category = "Build"
+command = "${CARGO}"
+args = [
+    "build",
+    "--target",
+    "${ENGINE_CARGO_TARGET}",
+    "@@remove-empty(RELEASE)",
+    "--no-default-features",
+    "--features=${ACTUAL_FEATURES}",
+    "--verbose",
+    "-p",
+    "aurora-engine",
+    "-Z",
+    "avoid-dev-deps",
+]
+
+[tasks.build-flow]
+category = "Build"
+dependencies = [
+    "build-contracts",
+    "build-engine",
+    "make-bin-directory",
+    "copy-engine-build",
+    "post-engine-build-env",
+]
+
+[tasks.build]
+env = { "ACTUAL_FEATURES" = "${CARGO_FEATURES}", "ACTUAL_WASM" = "${TARGET_WASM}" }
+category = "Build"
+run_task = "build-flow"
+
+[tasks.test-contracts]
+category = "Test"
+script = '''
+cd etc/eth-contracts
+yarn
+yarn test
+'''
+
+[tasks.test-engine]
+category = "Test"
+command = "${CARGO}"
+args = [
+    "test",
+    "--features",
+    "${CARGO_FEATURES_TEST}",
+]
+
+[tasks.test-flow]
+category = "Test"
+dependencies = [
+    "build-contracts",
+    "test-contracts",
+    "build-engine",
+    "make-bin-directory",
+    "copy-engine-build",
+    "test-engine",
+    "post-engine-build-env",
+]
+
+[tasks.test]
+env = { "ACTUAL_FEATURES" = "${CARGO_FEATURES_TEST}", "ACTUAL_WASM" = "${TARGET_WASM_TEST}" }
+category = "Test"
+run_task = "test-flow"
+
+[tasks.deploy]
+category = "Deploy"
+script = "${NEAR} deploy --acount-id${NEAR_EVM_ACCOUNT} --wasm-file=bin/${TARGET_WASM}"
