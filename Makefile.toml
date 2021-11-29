@@ -197,5 +197,6 @@ category = "Test"
 run_task = "test-flow"
 
 [tasks.deploy]
+condition = { profiles = ["mainnet", "testnet", "betanet"] }
 category = "Deploy"
 script = "${NEAR} deploy --acount-id${NEAR_EVM_ACCOUNT} --wasm-file=bin/${TARGET_WASM}"
