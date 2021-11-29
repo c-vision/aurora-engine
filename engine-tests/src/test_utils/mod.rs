@@ -487,11 +487,11 @@ impl Default for AuroraRunner {
     fn default() -> Self {
         let aurora_account_id = "aurora".to_string();
         let evm_wasm_bytes = if cfg!(feature = "mainnet-test") {
-            std::fs::read("../dist/mainnet-development.wasm").unwrap()
+            std::fs::read("../bin/mainnet-development.wasm").unwrap()
         } else if cfg!(feature = "testnet-test") {
-            std::fs::read("../dist/testnet-development.wasm").unwrap()
+            std::fs::read("../bin/testnet-development.wasm").unwrap()
         } else {
-            std::fs::read("../dist/betanet-development.wasm").unwrap()
+            std::fs::read("../bin/betanet-development.wasm").unwrap()
         };
         let mut wasm_config = VMConfig::default();
         // See https://github.com/near/nearcore/pull/4979/
