@@ -38,18 +38,18 @@ jobs:
     steps:
       - name: Clone the repository
         uses: actions/checkout@v2
-      - run: make debug
+      - run: cargo make build-development
       - run: ls -lH mainnet-debug.wasm
       - name: Upload the mainnet-debug.wasm artifact
         uses: actions/upload-artifact@v2
         with:
           name: mainnet-debug.wasm
-          path: mainnet-debug.wasm
+          path: bin/mainnet-debug.wasm
       - name: Update the latest release
         uses: svenstaro/upload-release-action@v2
         with:
           tag: latest
-          file: mainnet-debug.wasm
+          file: bin/mainnet-debug.wasm
           overwrite: true
           repo_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Update the latest tag

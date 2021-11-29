@@ -15,7 +15,6 @@ NEAR = "near"
 CARGO = "cargo"
 ENGINE_CARGO_TARGET = "wasm32-unknown-unknown"
 SWEEP_DAYS = 14 # 14 days, 2 weeks
-RELEASE = { source = "${IS_RELEASE}", default = false, mapping = { "true" = "--release", "false" = "" } }
 
 [tasks.sweep]
 category = "Cleanup"
@@ -134,7 +133,7 @@ args = [
     "build",
     "--target",
     "${ENGINE_CARGO_TARGET}",
-    "@@remove-empty(RELEASE)",
+    "@@remove-empty(RELEASE_ARG)",
     "--no-default-features",
     "--features=${ACTUAL_FEATURES}",
     "--verbose",
@@ -155,7 +154,12 @@ dependencies = [
 ]
 
 [tasks.build]
-env = { "ACTUAL_FEATURES" = "${CARGO_FEATURES}", "ACTUAL_WASM" = "${TARGET_WASM}" }
+env = { "ACTUAL_FEATURES" = "${CARGO_FEATURES}", "ACTUAL_WASM" = "${TARGET_WASM}", "RELEASE_ARG" = "--release", "IS_RELEASE" = true }
+category = "Build"
+run_task = "build-flow"
+
+[tasks.build-debug]
+env = { "ACTUAL_FEATURES" = "${CARGO_FEATURES_TEST}", "ACTUAL_WASM" = "${TARGET_WASM_TEST}", "IS_RELEASE" = false }
 category = "Build"
 run_task = "build-flow"
 
@@ -181,7 +185,7 @@ category = "Test"
 dependencies = [
     "build-contracts",
     "test-contracts",
-    "build-engine",
+    "build-debug",
     "make-bin-directory",
     "copy-engine-build",
     "test-engine",
@@ -189,7 +193,6 @@ dependencies = [
 ]
 
 [tasks.test]
-env = { "ACTUAL_FEATURES" = "${CARGO_FEATURES_TEST}", "ACTUAL_WASM" = "${TARGET_WASM_TEST}" }
 category = "Test"
 run_task = "test-flow"
 
