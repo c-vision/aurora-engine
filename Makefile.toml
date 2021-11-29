@@ -163,6 +163,19 @@ env = { "ACTUAL_FEATURES" = "${CARGO_FEATURES_TEST}", "ACTUAL_WASM" = "${TARGET_
 category = "Build"
 run_task = "build-flow"
 
+[tasks.build-bully]
+env = { "ACTUAL_FEATURES" = "${CARGO_FEATURES_BULLY}", "ACTUAL_WASM" = "${TARGET_WASM_BULLY}", "IS_RELEASE" = false }
+category = "Build"
+run_task = "build-flow"
+
+[tasks.build-all]
+category = "Build"
+dependencies = [
+    "build",
+    "build-debug",
+    "build-bully",
+]
+
 [tasks.test-contracts]
 category = "Test"
 script = '''

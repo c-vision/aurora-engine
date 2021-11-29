@@ -11,7 +11,7 @@
 *~
 
 # Rust artifacts
-dist/
+bin/
 target/
 
 # Solidity artifacts
