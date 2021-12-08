@@ -1,4 +1,4 @@
-use crate::H160;
+use crate::{String, H160};
 use borsh::maybestd::io;
 use borsh::{BorshDeserialize, BorshSerialize};
 
@@ -58,5 +58,23 @@ mod tests {
             addr.encode(),
             "096DE9C2B8A5B8c22cEe3289B101f6960d68E51E".to_lowercase()
         );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_wrong_address_19() {
+        let serialized_addr = [0u8; 19];
+        let addr = Address::try_from_slice(&serialized_addr);
+        assert!(addr.is_err());
+
+        let serialized_addr = [0u8; 21];
+        let _ = Address::try_from_slice(&serialized_addr);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_wrong_address_21() {
+        let serialized_addr = [0u8; 21];
+        let _ = Address::try_from_slice(&serialized_addr);
     }
 }
