@@ -14,7 +14,7 @@ skip_core_tasks = true
 NEAR = "near"
 CARGO = "cargo"
 ENGINE_CARGO_TARGET = "wasm32-unknown-unknown"
-SWEEP_DAYS = 14 # 14 days, 2 weeks
+SWEEP_DAYS = 30 # 14 days, 2 weeks
 
 [tasks.sweep]
 category = "Cleanup"

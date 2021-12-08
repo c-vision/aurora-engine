@@ -9,7 +9,7 @@ on:
 name: Lints
 jobs:
   fmt:
-    name: rustfmt
+    name: Format
     runs-on: [self-hosted, light]
     steps:
       - name: Clone the repository
@@ -37,9 +37,8 @@ jobs:
         run: cargo make clippy
       - name: Run cargo clippy
         run: cargo clippy
-
   contracts:
-    name: eth-contracts
+    name: Contracts
     runs-on: [self-hosted, light]
     steps:
       - name: Clone the repository

@@ -1,0 +1,19 @@
+---
+on:
+  schedule:
+    - cron: '14 7 15 * *'
+name: Scheduled sweep
+jobs:
+  clippy:
+    name: Sweep
+    runs-on: [self-hosted, heavy]
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@v2
+      - name: Install cargo-make
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: --debug cargo-make
+      - name: Run sweep
+        run: cargo make sweep
