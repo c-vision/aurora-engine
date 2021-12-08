@@ -1,5 +1,6 @@
 use crate::{str, vec, Address, String, Vec, U256};
 
+pub mod address;
 pub mod balance;
 pub mod fee;
 pub mod gas;
