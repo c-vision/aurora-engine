@@ -159,6 +159,11 @@ category = "Build"
 run_task = "build-flow"
 
 [tasks.build-debug]
+env = { "ACTUAL_FEATURES" = "${CARGO_FEATURES_TEST}", "ACTUAL_WASM" = "${TARGET_WASM_DEBUG}", "IS_RELEASE" = false }
+category = "Build"
+run_task = "build-flow"
+
+[tasks.build-test]
 env = { "ACTUAL_FEATURES" = "${CARGO_FEATURES_TEST}", "ACTUAL_WASM" = "${TARGET_WASM_TEST}", "IS_RELEASE" = false }
 category = "Build"
 run_task = "build-flow"
@@ -173,6 +178,7 @@ category = "Build"
 dependencies = [
     "build",
     "build-debug",
+    "build-test",
     "build-bully",
 ]
 
@@ -196,13 +202,9 @@ args = [
 [tasks.test-flow]
 category = "Test"
 dependencies = [
-    "build-contracts",
+    "build-test",
     "test-contracts",
-    "build-debug",
-    "make-bin-directory",
-    "copy-engine-build",
     "test-engine",
-    "post-engine-build-env",
 ]
 
 [tasks.test]
