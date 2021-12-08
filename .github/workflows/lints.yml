@@ -1,4 +1,3 @@
-# See: https://github.com/actions-rs/example/blob/master/.github/workflows/nightly_lints.yml
 ---
 on:
   push:
