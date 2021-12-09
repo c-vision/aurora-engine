@@ -11,7 +11,7 @@ jobs:
   test-mainnet:
     strategy:
       matrix:
-        network: [ mainnet, testnet, betanet ]
+        network: [ mainnet, testnet ]
     name: Test ${{ matrix.network }}
     runs-on: [self-hosted, heavy]
     steps:

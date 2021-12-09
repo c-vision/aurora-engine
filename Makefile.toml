@@ -1,7 +1,6 @@
 env_files = [
     { path = ".env/mainnet.env", profile = "mainnet" },
     { path = ".env/testnet.env", profile = "testnet" },
-    { path = ".env/betanet.env", profile = "betanet" },
     { path = ".env/local.env", profile = "local" },
     { path = ".env/local.env", profile = "development" },
 ]
@@ -212,6 +211,6 @@ category = "Test"
 run_task = "test-flow"
 
 [tasks.deploy]
-condition = { profiles = ["mainnet", "testnet", "betanet"] }
+condition = { profiles = ["mainnet", "testnet"] }
 category = "Deploy"
 script = "${NEAR} deploy --acount-id${NEAR_EVM_ACCOUNT} --wasm-file=bin/${TARGET_WASM}"
