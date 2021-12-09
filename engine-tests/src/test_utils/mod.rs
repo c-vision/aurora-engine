@@ -486,10 +486,10 @@ impl AuroraRunner {
 impl Default for AuroraRunner {
     fn default() -> Self {
         let aurora_account_id = "aurora".to_string();
-        let (evm_wasm_bytes, _chain_id) = if cfg!(feature = "mainnet-test") {
-            (std::fs::read("../mainnet-test.wasm").unwrap(), 1313161554)
+        let evm_wasm_bytes = if cfg!(feature = "mainnet-test") {
+            std::fs::read("../mainnet-test.wasm").unwrap()
         } else if cfg!(feature = "testnet-test") {
-            (std::fs::read("../testnet-test.wasm").unwrap(), 1313161555)
+            std::fs::read("../testnet-test.wasm").unwrap()
         } else {
             panic!("AuroraRunner requires mainnet-test or testnet-test feature enabled.")
         };
@@ -499,7 +499,7 @@ impl Default for AuroraRunner {
 
         Self {
             aurora_account_id: aurora_account_id.clone(),
-            chain_id: 1313161556, // NEAR betanet,
+            chain_id: 1313161556, // NEAR localnet,
             code: ContractCode::new(evm_wasm_bytes, None),
             cache: Default::default(),
             ext: Default::default(),
